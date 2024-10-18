@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Prediction</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h3>Predict Text Authenticity</h3>
+        <form id="predictionForm">
+            <div class="input-field">
+                <textarea id="inputText" class="materialize-textarea" placeholder="Enter your text here"></textarea>
+            </div>
+            <button class="btn waves-effect waves-light" type="submit">Predict</button>
+        </form>
+
+        <h5>Prediction Result:</h5>
+        <p id="result">The prediction result will appear here.</p>
+    </div>
+
+    <script>
+        $(document).ready(function(){
+            // CSRF token setup (optional)
+            // const csrftoken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
+            
+            // Handle form submission
+            $('#predictionForm').on('submit', function(event) {
+                event.preventDefault(); // Prevent page reload
+                
+                const inputText = $('#inputText').val();
+
+                // Check if input is not empty
+                if (!inputText) {
+                    $('#result').text('Please enter some text.');
+                    return;
+                }
+
+                // Send input text to the backend
+                $.ajax({
+                    url: '/predict',
+                    type: 'POST',
+                    // headers: {
+                    //     'X-CSRF-TOKEN': csrftoken // If CSRF is enabled on Flask
+                    // },
+                    data: { text: inputText },
+                    success: function(response) {
+                        // Display the prediction result
+                        $('#result').text('Predicted class: ' + response.prediction);
+                    },
+                    error: function(xhr, status, error) {
+                        $('#result').text('Error in prediction: ' + error);
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
